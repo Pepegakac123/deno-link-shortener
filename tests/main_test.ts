@@ -1,30 +1,29 @@
-import { assertEquals } from "@std/assert";
-import server from "../src/main.ts";
+import { assertEquals, assertNotEquals, assertRejects } from "@std/assert";
+import { delay } from "jsr:@std/async/delay";
+import { linkShortener } from "../src/db.ts";
 
-Deno.test(async function serverFetch() {
-	const req = new Request("https://deno.land");
-	const res = await server.fetch(req);
-	assertEquals(await res.text(), "Home page");
-});
+Deno.test("URL Shortener", async (t) => {
+	await t.step("Should generate a shot code for a valid URL", async () => {
+		const longUrl = "https://deno.land/std";
+		const shortCode = await linkShortener(longUrl);
+		assertEquals(typeof shortCode, "string");
+		assertEquals(shortCode.length, 11);
+	});
+	await t.step("Should generate a unique shortcode", async () => {
+		const longUrl = "https://www.example.com/some/long/path";
+		const a = await linkShortener(longUrl);
+		delay(5);
+		const b = await linkShortener(longUrl);
 
-Deno.test(async function serverFetchNotFound() {
-	const req = new Request("https://deno.land/404");
-	const res = await server.fetch(req);
-	assertEquals(res.status, 404);
-});
+		assertNotEquals(a, b);
+	});
 
-Deno.test(async function serverFetchUsers() {
-	const req = new Request("https://deno.land/users/123");
-	const res = await server.fetch(req);
-	assertEquals(await res.text(), "123");
-});
+	await t.step("Should throw an error for an invalid URL", async () => {
+		const longUrl = "invalid-url";
 
-Deno.test(async function serverFetchStatic() {
-	const req = new Request("https://deno.land/static/hello.js");
-	const res = await server.fetch(req);
-	assertEquals(await res.text(), 'console.log("Hello, world!");\n');
-	assertEquals(
-		res.headers.get("content-type"),
-		"text/javascript; charset=UTF-8",
-	);
+		//Passes only when the promise rejects
+		assertRejects(async () => {
+			await linkShortener(longUrl);
+		});
+	});
 });
