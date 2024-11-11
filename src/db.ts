@@ -58,15 +58,3 @@ export const linkShortener = async (longUrl: string) => {
 
 	return shortCode;
 };
-
-const longUrl = "https://kacperadamczyk.pl";
-const shortCode = await linkShortener(longUrl);
-const userId = "test";
-
-console.log(shortCode);
-
-await storeShortLink(longUrl, shortCode, userId);
-
-const link = await getShortLink(shortCode);
-
-console.log(link);

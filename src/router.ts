@@ -1,4 +1,4 @@
-import { type Route, route, type Handler } from "@std/http";
+import { type Route, route, type Handler } from "jsr:@std/http";
 
 export class Router {
 	#routes: Route[] = [];
@@ -11,12 +11,12 @@ export class Router {
 		this.#addRoute("POST", path, handler);
 	}
 
-	delete(path: string, handler: Handler) {
-		this.#addRoute("DELETE", path, handler);
-	}
-
 	put(path: string, handler: Handler) {
 		this.#addRoute("PUT", path, handler);
+	}
+
+	delete(path: string, handler: Handler) {
+		this.#addRoute("DELETE", path, handler);
 	}
 
 	#addRoute(method: string, path: string, handler: Handler) {
@@ -30,7 +30,7 @@ export class Router {
 					return await handler(req, info!, params!);
 				} catch (error) {
 					console.error("Error handling request:", error);
-					return new Response("Internal server error", { status: 500 });
+					return new Response("Internal Server Error", { status: 500 });
 				}
 			},
 		});
@@ -39,7 +39,7 @@ export class Router {
 	get handler() {
 		return route(
 			this.#routes,
-			() => new Response("Not found", { status: 404 }),
+			() => new Response("Not Found", { status: 404 }),
 		);
 	}
 }
