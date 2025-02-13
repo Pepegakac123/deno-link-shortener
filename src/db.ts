@@ -1,6 +1,47 @@
 import { encodeBase64Url, encodeHex } from "jsr:@std/encoding";
 import { crypto } from "jsr:@std/crypto/crypto";
 
+const kv = await Deno.openKv();
+
+export type ShortLink = {
+	shortCode: string;
+	longUrl: string;
+	createdAt: number;
+	userId: string;
+	clickCount: number;
+	lastClickEvent?: string;
+};
+
+export async function storeShortLink(
+	longUrl: string,
+	shortCode: string,
+	userId: string,
+) {
+	const shortLinkKey = ["shortlinks", shortCode];
+	const data: ShortLink = {
+		shortCode,
+		longUrl,
+		userId,
+		createdAt: Date.now(),
+		clickCount: 0,
+	};
+	try {
+		const res = await kv.set(shortLinkKey, data);
+		return shortLinkKey;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export async function getShortLink(shortCode: string) {
+	try {
+		const link = await kv.get<ShortLink>(["shortlinks", shortCode]);
+		return link.value;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 export async function generateShortCode(longUrl: string) {
 	try {
 		new URL(longUrl);
