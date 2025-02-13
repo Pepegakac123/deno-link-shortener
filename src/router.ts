@@ -1,20 +1,18 @@
-import { type Route, route, type Handler } from "jsr:@std/http";
+import { type Route, route, type Handler } from "@std/http/unstable-route";
 
 export class Router {
+	// private router: Route[] = []
 	#routes: Route[] = [];
 
 	get(path: string, handler: Handler) {
 		this.#addRoute("GET", path, handler);
 	}
-
 	post(path: string, handler: Handler) {
 		this.#addRoute("POST", path, handler);
 	}
-
 	put(path: string, handler: Handler) {
 		this.#addRoute("PUT", path, handler);
 	}
-
 	delete(path: string, handler: Handler) {
 		this.#addRoute("DELETE", path, handler);
 	}
@@ -26,10 +24,9 @@ export class Router {
 			method,
 			handler: async (req, info, params) => {
 				try {
-					// biome-ignore lint/style/noNonNullAssertion: <explanation>
-					return await handler(req, info!, params!);
+					return await handler(req, info, params);
 				} catch (error) {
-					console.error("Error handling request:", error);
+					console.error("Error handling request", error);
 					return new Response("Internal Server Error", { status: 500 });
 				}
 			},
