@@ -1,8 +1,11 @@
 import { type Route, route, type Handler } from "@std/http/unstable-route";
+import type { GitHubUser } from "./db.ts";
+import { getCurrentUser } from "./auth.ts";
 
 export class Router {
-	// private router: Route[] = []
 	#routes: Route[] = [];
+
+	currentUser?: GitHubUser | null; // <-- HERE
 
 	get(path: string, handler: Handler) {
 		this.#addRoute("GET", path, handler);
@@ -16,17 +19,18 @@ export class Router {
 	delete(path: string, handler: Handler) {
 		this.#addRoute("DELETE", path, handler);
 	}
-
 	#addRoute(method: string, path: string, handler: Handler) {
 		const pattern = new URLPattern({ pathname: path });
+
 		this.#routes.push({
 			pattern,
 			method,
 			handler: async (req, info, params) => {
 				try {
+					this.currentUser = await getCurrentUser(req); // <-- HERE
 					return await handler(req, info, params);
 				} catch (error) {
-					console.error("Error handling request", error);
+					console.error("Error handling request:", error);
 					return new Response("Internal Server Error", { status: 500 });
 				}
 			},

@@ -29,6 +29,16 @@ export async function getUser(sessionId: string) {
 	const res = await kv.get<GitHubUser>(key);
 	return res.value;
 }
+export async function getUserLinks(userId: string) {
+	const list = kv.list<string>({ prefix: [userId] });
+	const res = await Array.fromAsync(list);
+	const userShortLinkKeys = res.map((v) => ["shortlinks", v.value]);
+
+	const userRes = await kv.getMany<ShortLink[]>(userShortLinkKeys);
+	const userShortLinks = await Array.fromAsync(userRes);
+
+	return userShortLinks.map((v) => v.value);
+}
 
 export async function storeShortLink(
 	longUrl: string,
@@ -43,12 +53,15 @@ export async function storeShortLink(
 		createdAt: Date.now(),
 		clickCount: 0,
 	};
-	try {
-		const res = await kv.set(shortLinkKey, data);
-		return shortLinkKey;
-	} catch (error) {
-		console.error(error);
-	}
+	const userKey = [userId, shortCode];
+
+	const res = await kv
+		.atomic()
+		.set(shortLinkKey, data)
+		.set(userKey, shortCode)
+		.commit();
+
+	return res;
 }
 
 export async function getShortLink(shortCode: string) {
@@ -75,4 +88,42 @@ export async function generateShortCode(longUrl: string) {
 	const shortCode = encodeBase64Url(hash.slice(0, 8));
 
 	return shortCode;
+}
+
+export async function incrementClickCount(
+	shortCode: string,
+	data?: Partial<ClickAnalytics>,
+) {
+	const shortLinkKey = ["shortlinks", shortCode];
+	const shortLink = await kv.get(shortLinkKey);
+	const shortLinkData = shortLink.value as ShortLink;
+
+	const newClickCount = shortLinkData?.clickCount + 1;
+
+	const analyicsKey = ["analytics", shortCode, newClickCount];
+	const analyticsData = {
+		shortCode,
+		createdAt: Date.now(),
+		...data,
+		// ipAddress: "192.168.1.1",
+		// userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+		// country: "United States"
+	};
+
+	const res = await kv
+		.atomic()
+		.check(shortLink)
+		.set(shortLinkKey, {
+			...shortLinkData,
+			clickCount: shortLinkData?.clickCount + 1,
+		})
+		.set(analyicsKey, analyticsData)
+		.commit();
+	if (res.ok) {
+		console.log("Logged click");
+	} else {
+		console.error("Not logged");
+	}
+
+	return res;
 }
