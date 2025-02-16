@@ -18,6 +18,14 @@ export type GitHubUser = {
 	html_url: string;
 };
 
+export type ClickAnalytics = {
+	shortUrl: string;
+	createdAt: number;
+	ipAddress: string;
+	userAgent: string;
+	country?: string;
+};
+
 export async function storeUser(sessionId: string, userData: GitHubUser) {
 	const key = ["sessions", sessionId];
 	const res = await kv.set(key, userData);
@@ -90,6 +98,23 @@ export async function generateShortCode(longUrl: string) {
 	return shortCode;
 }
 
+// Realtime Analytics
+
+export function watchShortLink(shortCode: string) {
+	const shortLinkKey = ["shortlinks", shortCode];
+	const shortLinkStream = kv.watch<ShortLink[]>([shortLinkKey]).getReader();
+	return shortLinkStream;
+}
+
+export async function getClickEvent(shortCode: string, clickId: number) {
+	const analytics = await kv.get<ClickAnalytics>([
+		"analytics",
+		shortCode,
+		clickId,
+	]);
+	return analytics.value;
+}
+
 export async function incrementClickCount(
 	shortCode: string,
 	data?: Partial<ClickAnalytics>,
@@ -115,14 +140,13 @@ export async function incrementClickCount(
 		.check(shortLink)
 		.set(shortLinkKey, {
 			...shortLinkData,
-			clickCount: shortLinkData?.clickCount + 1,
+			clickCount: newClickCount,
 		})
 		.set(analyicsKey, analyticsData)
 		.commit();
-	if (res.ok) {
-		console.log("Logged click");
-	} else {
-		console.error("Not logged");
+
+	if (!res.ok) {
+		console.error("Error recording click!");
 	}
 
 	return res;

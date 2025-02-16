@@ -11,7 +11,15 @@ import {
 } from "./ui.tsx";
 import { createGitHubOAuthConfig, createHelpers } from "jsr:@deno/kv-oauth";
 import { handleGithubCallback } from "./auth.ts";
-import { type GitHubUser, getUserLinks, incrementClickCount } from "./db.ts";
+import {
+	type GitHubUser,
+	getUserLinks,
+	incrementClickCount,
+	watchShortLink,
+	getClickEvent,
+} from "./db.ts";
+import { serveDir } from "jsr:@std/http@0.221";
+
 const app = new Router();
 
 const oauthConfig = createGitHubOAuthConfig({
@@ -107,6 +115,51 @@ app.get("/links/:id", async (_req, _info, params) => {
 	});
 });
 
+app.get("/realtime/:id", (_req, _info, params) => {
+	if (!app.currentUser) return unauthorizedResponse();
+	const shortCode = _info?.pathname.groups.id as string;
+
+	const stream = watchShortLink(shortCode);
+
+	const body = new ReadableStream({
+		async start(controller) {
+			while (true) {
+				const { done } = await stream.read();
+				if (done) {
+					return;
+				}
+
+				const shortLink = await getShortLink(shortCode);
+				if (!shortLink) throw Error("Short Link Analytics error");
+				const clickAnalytics =
+					shortLink.clickCount > 0 &&
+					(await getClickEvent(shortCode, shortLink.clickCount));
+
+				controller.enqueue(
+					new TextEncoder().encode(
+						`data: ${JSON.stringify({
+							clickCount: shortLink.clickCount,
+							clickAnalytics,
+						})}\n\n`,
+					),
+				);
+				console.log("Stream updated");
+			}
+		},
+		cancel() {
+			stream.cancel();
+		},
+	});
+
+	return new Response(body, {
+		headers: {
+			"Content-Type": "text/event-stream",
+			"Cache-Control": "no-cache",
+			Connection: "keep-alive",
+		},
+	});
+});
+
 app.get("/:id", async (req, _info, params) => {
 	const shortCode = _info?.pathname.groups.id as string;
 	const shortLink = await getShortLink(shortCode);
@@ -142,6 +195,8 @@ app.get("/:id", async (req, _info, params) => {
 		},
 	});
 });
+
+app.get("/static/*", (req) => serveDir(req));
 
 export default {
 	fetch(req) {
