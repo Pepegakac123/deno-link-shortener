@@ -1,9 +1,13 @@
+import { render } from "npm:preact-render-to-string";
 import { generateShortCode, getShortLink, storeShortLink } from "./db.ts";
 import { Router } from "./router.ts";
+import { HomePage } from "./ui.tsx";
 
 const app = new Router();
 
-app.get("/", () => new Response("Hello World"));
+app.get("/", () => {
+	return new Response(render(HomePage({ user: null })));
+});
 
 app.post("/links", async (req) => {
 	try {

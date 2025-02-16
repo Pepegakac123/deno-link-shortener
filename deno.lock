@@ -1,31 +1,63 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@deno/kv-oauth@0.11": "0.11.0",
+    "jsr:@std/assert@0.221": "0.221.0",
     "jsr:@std/assert@1": "1.0.11",
     "jsr:@std/async@*": "1.0.10",
+    "jsr:@std/async@0.221": "0.221.0",
+    "jsr:@std/cli@0.221": "0.221.0",
     "jsr:@std/cli@^1.0.12": "1.0.12",
     "jsr:@std/collections@*": "1.0.10",
     "jsr:@std/crypto@*": "1.0.4",
+    "jsr:@std/datetime@0.221": "0.221.0",
     "jsr:@std/encoding@*": "1.0.7",
+    "jsr:@std/encoding@0.221": "0.221.0",
     "jsr:@std/encoding@^1.0.7": "1.0.7",
+    "jsr:@std/fmt@0.221": "0.221.0",
     "jsr:@std/fmt@^1.0.5": "1.0.5",
     "jsr:@std/html@^1.0.3": "1.0.3",
+    "jsr:@std/http@0.221": "0.221.0",
     "jsr:@std/http@^1.0.13": "1.0.13",
     "jsr:@std/internal@^1.0.5": "1.0.5",
+    "jsr:@std/media-types@0.221": "0.221.0",
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.4": "1.0.4",
+    "jsr:@std/path@0.221": "0.221.0",
     "jsr:@std/path@^1.0.8": "1.0.8",
-    "jsr:@std/streams@^1.0.9": "1.0.9"
+    "jsr:@std/streams@0.221": "0.221.0",
+    "jsr:@std/streams@^1.0.9": "1.0.9",
+    "npm:preact-render-to-string@*": "6.5.13_preact@10.25.4",
+    "npm:preact@*": "10.25.4"
   },
   "jsr": {
+    "@deno/kv-oauth@0.11.0": {
+      "integrity": "17a8822fde1573563b8bdb526d925e398a4b92394381273bad1e837fb4a6c8b2",
+      "dependencies": [
+        "jsr:@std/datetime",
+        "jsr:@std/http@0.221"
+      ]
+    },
+    "@std/assert@0.221.0": {
+      "integrity": "a5f1aa6e7909dbea271754fd4ab3f4e687aeff4873b4cef9a320af813adb489a"
+    },
     "@std/assert@1.0.11": {
       "integrity": "2461ef3c368fe88bc60e186e7744a93112f16fd110022e113a0849e94d1c83c1",
       "dependencies": [
         "jsr:@std/internal"
       ]
     },
+    "@std/async@0.221.0": {
+      "integrity": "f5519861754a1bb2898d227dd8ccb545abc975534aa9063e53911d6cb4e365cf"
+    },
     "@std/async@1.0.10": {
       "integrity": "2ff1b1c7d33d1416159989b0f69e59ec7ee8cb58510df01e454def2108b3dbec"
+    },
+    "@std/cli@0.221.0": {
+      "integrity": "157c2f881f0f85a73d994e7668754aeeccdf597680bd9c65de9c6bcd670416ac",
+      "dependencies": [
+        "jsr:@std/assert@0.221"
+      ]
     },
     "@std/cli@1.0.12": {
       "integrity": "e5cfb7814d189da174ecd7a34fbbd63f3513e24a1b307feb2fcd5da47a070d90"
@@ -36,8 +68,17 @@
     "@std/crypto@1.0.4": {
       "integrity": "cee245c453bd5366207f4d8aa25ea3e9c86cecad2be3fefcaa6cb17203d79340"
     },
+    "@std/datetime@0.221.0": {
+      "integrity": "41188de53bd811a0f04955b1cec0ce65f9b8fec293529818c829a55dfcce5031"
+    },
+    "@std/encoding@0.221.0": {
+      "integrity": "d1dd76ef0dc5d14088411e6dc1dede53bf8308c95d1537df1214c97137208e45"
+    },
     "@std/encoding@1.0.7": {
       "integrity": "f631247c1698fef289f2de9e2a33d571e46133b38d042905e3eac3715030a82d"
+    },
+    "@std/fmt@0.221.0": {
+      "integrity": "379fed69bdd9731110f26b9085aeb740606b20428ce6af31ef6bd45ef8efa62a"
     },
     "@std/fmt@1.0.5": {
       "integrity": "0cfab43364bc36650d83c425cd6d99910fc20c4576631149f0f987eddede1a4d"
@@ -45,21 +86,37 @@
     "@std/html@1.0.3": {
       "integrity": "7a0ac35e050431fb49d44e61c8b8aac1ebd55937e0dc9ec6409aa4bab39a7988"
     },
+    "@std/http@0.221.0": {
+      "integrity": "35fdcfed1501f2052338bf7ffba5d66f1455f2fffc01e9d7cf13eed548fffbaa",
+      "dependencies": [
+        "jsr:@std/assert@0.221",
+        "jsr:@std/async@0.221",
+        "jsr:@std/cli@0.221",
+        "jsr:@std/encoding@0.221",
+        "jsr:@std/fmt@0.221",
+        "jsr:@std/media-types@0.221",
+        "jsr:@std/path@0.221",
+        "jsr:@std/streams@0.221"
+      ]
+    },
     "@std/http@1.0.13": {
       "integrity": "d29618b982f7ae44380111f7e5b43da59b15db64101198bb5f77100d44eb1e1e",
       "dependencies": [
-        "jsr:@std/cli",
+        "jsr:@std/cli@^1.0.12",
         "jsr:@std/encoding@^1.0.7",
-        "jsr:@std/fmt",
+        "jsr:@std/fmt@^1.0.5",
         "jsr:@std/html",
-        "jsr:@std/media-types",
+        "jsr:@std/media-types@^1.1.0",
         "jsr:@std/net",
-        "jsr:@std/path",
-        "jsr:@std/streams"
+        "jsr:@std/path@^1.0.8",
+        "jsr:@std/streams@^1.0.9"
       ]
     },
     "@std/internal@1.0.5": {
       "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
+    },
+    "@std/media-types@0.221.0": {
+      "integrity": "572addcbda2a21367c1f8eaa8c72fea6654b50779027dbde9f693aaa4bac30c3"
     },
     "@std/media-types@1.1.0": {
       "integrity": "c9d093f0c05c3512932b330e3cc1fe1d627b301db33a4c2c2185c02471d6eaa4"
@@ -67,17 +124,50 @@
     "@std/net@1.0.4": {
       "integrity": "2f403b455ebbccf83d8a027d29c5a9e3a2452fea39bb2da7f2c04af09c8bc852"
     },
+    "@std/path@0.221.0": {
+      "integrity": "0a36f6b17314ef653a3a1649740cc8db51b25a133ecfe838f20b79a56ebe0095",
+      "dependencies": [
+        "jsr:@std/assert@0.221"
+      ]
+    },
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
+    },
+    "@std/streams@0.221.0": {
+      "integrity": "47f2f74634b47449277c0ee79fe878da4424b66bd8975c032e3afdca88986e61",
+      "dependencies": [
+        "jsr:@std/assert@0.221"
+      ]
     },
     "@std/streams@1.0.9": {
       "integrity": "a9d26b1988cdd7aa7b1f4b51e1c36c1557f3f252880fa6cc5b9f37078b1a5035"
     }
   },
+  "npm": {
+    "preact-render-to-string@6.5.13_preact@10.25.4": {
+      "integrity": "sha512-iGPd+hKPMFKsfpR2vL4kJ6ZPcFIoWZEcBf0Dpm3zOpdVvj77aY8RlLiQji5OMrngEyaxGogeakTb54uS2FvA6w==",
+      "dependencies": [
+        "preact"
+      ]
+    },
+    "preact@10.25.4": {
+      "integrity": "sha512-jLdZDb+Q+odkHJ+MpW/9U5cODzqnB+fy2EiHSZES7ldV5LK7yjlVzTp7R8Xy6W6y75kfK8iWYtFVH7lvjwrCMA=="
+    }
+  },
+  "redirects": {
+    "https://esm.sh/preact/jsx-runtime": "https://esm.sh/preact@10.25.4/jsx-runtime"
+  },
+  "remote": {
+    "https://esm.sh/preact@10.25.4/denonext/jsx-runtime.mjs": "28db928810c77a6aa3a8690826a773d6bb08bea2bb5a2d9935b7b0a32808449e",
+    "https://esm.sh/preact@10.25.4/denonext/preact.mjs": "5b19c5a3daab9e9f4f4bed775afbb84dd4de2b8cc670ee332f5458c53a6a2d45",
+    "https://esm.sh/preact@10.25.4/jsx-runtime": "b9feb114168d102397dc3d6b09e00630b9ef61c4fa98316c0b18b4c02996356b"
+  },
   "workspace": {
     "dependencies": [
+      "jsr:@deno/kv-oauth@0.11",
       "jsr:@std/assert@1",
-      "jsr:@std/http@^1.0.13"
+      "jsr:@std/http@^1.0.13",
+      "npm:preact@*"
     ]
   }
 }
